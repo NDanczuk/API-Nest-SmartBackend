@@ -1,8 +1,10 @@
 import {
   Body,
   Controller,
+  Get,
   Logger,
   Post,
+  Query,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -12,6 +14,7 @@ import {
   Transport,
 } from '@nestjs/microservices';
 import { CreateCategoryDto } from './dto/category/create-category.dto';
+import { Observable } from 'rxjs';
 
 @Controller('api/v1')
 export class AppController {
@@ -31,10 +34,12 @@ export class AppController {
 
   @Post('category')
   @UsePipes(ValidationPipe)
-  async createCategory(@Body() createCategoryDto: CreateCategoryDto) {
-    return await this.clientAdminBackend.emit(
-      'create-category',
-      createCategoryDto,
-    );
+  createCategory(@Body() createCategoryDto: CreateCategoryDto) {
+    return this.clientAdminBackend.emit('create-category', createCategoryDto);
+  }
+
+  @Get('category')
+  consultCategories(@Query('categoryId') _id: string): Observable<any> {
+    return this.clientAdminBackend.send('consult-categories', _id ? _id : '');
   }
 }
