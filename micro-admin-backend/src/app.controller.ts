@@ -13,6 +13,6 @@ export class AppController {
   async createCategory(@Payload() category: Category) {
     this.logger.log(`category: ${JSON.stringify(category)}`);
 
-    this.appService.createCategory(category);
+    await this.appService.createCategory(category);
   }
 }
