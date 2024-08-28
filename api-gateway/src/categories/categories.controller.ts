@@ -11,9 +11,9 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { CreateCategoryDto } from '../dto/category/create-category.dto';
+import { CreateCategoryDto } from './dto/create-category.dto';
 import { Observable } from 'rxjs';
-import { UpdateCategoryDto } from '../dto/category/update-category.dto';
+import { UpdateCategoryDto } from './dto/update-category.dto';
 
 @Controller('api/v1/category')
 export class CategoriesController {
