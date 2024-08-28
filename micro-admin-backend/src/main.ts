@@ -8,6 +8,7 @@ async function bootstrap() {
     transport: Transport.RMQ,
     options: {
       urls: ['amqp://dev:devpass@localhost:5672/smartranking'],
+      noAck: false,
       queue: 'admin-backend',
     },
   });
