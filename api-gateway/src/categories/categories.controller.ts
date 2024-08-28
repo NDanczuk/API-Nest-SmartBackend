@@ -11,7 +11,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
-import { Observable } from 'rxjs';
+import { lastValueFrom, Observable } from 'rxjs';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { ClientProxySmartRanking } from 'src/proxyrmq/client-proxy';
 
@@ -36,8 +36,10 @@ export class CategoriesController {
 
   @Post()
   @UsePipes(ValidationPipe)
-  createCategory(@Body() createCategoryDto: CreateCategoryDto) {
-    return this.clientAdminBackend.emit('create-category', createCategoryDto);
+  async createCategory(@Body() createCategoryDto: CreateCategoryDto) {
+    await lastValueFrom(
+      this.clientAdminBackend.emit('create-category', createCategoryDto),
+    );
   }
 
   @Get()

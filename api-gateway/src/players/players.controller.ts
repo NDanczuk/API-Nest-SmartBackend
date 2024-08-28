@@ -14,7 +14,7 @@ import {
 } from '@nestjs/common';
 import { ClientProxySmartRanking } from 'src/proxyrmq/client-proxy';
 import { CreatePlayerDto } from './dtos/create-player.dto';
-import { Observable } from 'rxjs';
+import { lastValueFrom, Observable } from 'rxjs';
 import { UpdatePlayerDto } from './dtos/update-player.dto';
 import { ParamsValidationPipe } from 'src/common/pipes/params-validation.pipe';
 
@@ -32,12 +32,17 @@ export class PlayersController {
   async createPlayer(@Body() createplayerDto: CreatePlayerDto) {
     this.logger.log(`createPlayerDto: ${JSON.stringify(createplayerDto)}`);
 
-    const category = await this.clientAdminBackend
-      .send('consult-category', createplayerDto.category)
-      .toPromise();
+    const category = await lastValueFrom(
+      this.clientAdminBackend.send(
+        'consult-category',
+        createplayerDto.category,
+      ),
+    );
 
     if (category) {
-      await this.clientAdminBackend.emit('create-player', createplayerDto);
+      await lastValueFrom(
+        this.clientAdminBackend.emit('create-player', createplayerDto),
+      );
     } else {
       throw new BadRequestException(`Category does not exist!`);
     }
@@ -54,15 +59,20 @@ export class PlayersController {
     @Body() updatePlayerDto: UpdatePlayerDto,
     @Param('_id', ParamsValidationPipe) _id: string,
   ) {
-    const category = await this.clientAdminBackend
-      .send('consult-category', updatePlayerDto.category)
-      .toPromise();
+    const category = await lastValueFrom(
+      this.clientAdminBackend.send(
+        'consult-category',
+        updatePlayerDto.category,
+      ),
+    );
 
     if (category) {
-      await this.clientAdminBackend.emit('update-player', {
-        id: _id,
-        player: updatePlayerDto,
-      });
+      await lastValueFrom(
+        this.clientAdminBackend.emit('update-player', {
+          id: _id,
+          player: updatePlayerDto,
+        }),
+      );
     } else {
       throw new BadRequestException(`Category does not exist!`);
     }
@@ -70,6 +80,6 @@ export class PlayersController {
 
   @Delete('/:_id')
   async deletePlayer(@Param('_id', ParamsValidationPipe) _id: string) {
-    await this.clientAdminBackend.emit('delete-player', { _id });
+    await lastValueFrom(this.clientAdminBackend.emit('delete-player', { _id }));
   }
 }
