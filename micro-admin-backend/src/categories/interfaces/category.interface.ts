@@ -1,6 +1,6 @@
 import { Document } from 'mongoose';
 import { Event } from './event.interface';
-import { Player } from '../players/player.interface';
+import { Player } from '../../players/interfaces/player.interface';
 
 export interface Category extends Document {
   readonly category: string;

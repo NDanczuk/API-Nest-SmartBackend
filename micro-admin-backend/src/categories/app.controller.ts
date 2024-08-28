@@ -1,5 +1,5 @@
 import { Controller, Logger } from '@nestjs/common';
-import { AppService } from './app.service';
+import { CategoriesService } from './categories.service';
 import {
   Ctx,
   EventPattern,
@@ -7,15 +7,15 @@ import {
   Payload,
   RmqContext,
 } from '@nestjs/microservices';
-import { Category } from './interfaces/categories/category.interface';
+import { Category } from './interfaces/category.interface';
 
 const ackErrors: string[] = ['E11000'];
 
 @Controller()
-export class AppController {
-  constructor(private readonly appService: AppService) {}
+export class CategoriesController {
+  constructor(private readonly categoriesService: CategoriesService) {}
 
-  logger = new Logger(AppController.name);
+  logger = new Logger(CategoriesController.name);
 
   @EventPattern(`create-category`)
   async createCategory(
@@ -28,7 +28,7 @@ export class AppController {
     this.logger.log(`category: ${JSON.stringify(category)}`);
 
     try {
-      await this.appService.createCategory(category);
+      await this.categoriesService.createCategory(category);
       await channel.ack(originalMsg);
     } catch (error) {
       this.logger.error(`error: ${JSON.stringify(error.message)}`);
@@ -54,9 +54,9 @@ export class AppController {
     const originalMsg = context.getMessage();
     try {
       if (_id) {
-        return await this.appService.consultCategoryById(_id);
+        return await this.categoriesService.consultCategoryById(_id);
       } else {
-        return await this.appService.consultCategories();
+        return await this.categoriesService.consultCategories();
       }
     } finally {
       await channel.ack(originalMsg);
@@ -71,7 +71,7 @@ export class AppController {
     try {
       const _id: string = data.id;
       const category: Category = data.category;
-      await this.appService.updateCategory(_id, category);
+      await this.categoriesService.updateCategory(_id, category);
       await channel.ack(originalMsg);
     } catch (error) {
       const filterAckError = ackErrors.filter((ackError) =>
