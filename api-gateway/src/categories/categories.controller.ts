@@ -10,16 +10,16 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { Observable } from 'rxjs';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import { ClientProxySmartRanking } from 'src/proxyrmq/client-proxy';
 
 @Controller('api/v1/category')
 export class CategoriesController {
   private logger = new Logger(CategoriesController.name);
 
-  private clientAdminBackend: ClientProxy;
+  constructor(private clientProxySmartRanking: ClientProxySmartRanking) {}
 
   // constructor() {
   //   this.clientAdminBackend = ClientProxyFactory.create({
@@ -30,6 +30,9 @@ export class CategoriesController {
   //     },
   //   });
   // }
+
+  private clientAdminBackend =
+    this.clientProxySmartRanking.getClientProxyAdminBackEndInstance();
 
   @Post()
   @UsePipes(ValidationPipe)
