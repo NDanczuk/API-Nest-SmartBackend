@@ -9,6 +9,8 @@ import {
   Post,
   Put,
   Query,
+  UploadedFile,
+  UseInterceptors,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -17,6 +19,7 @@ import { CreatePlayerDto } from './dtos/create-player.dto';
 import { lastValueFrom, Observable } from 'rxjs';
 import { UpdatePlayerDto } from './dtos/update-player.dto';
 import { ParamsValidationPipe } from 'src/common/pipes/params-validation.pipe';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('api/v1/players')
 export class PlayersController {
@@ -46,6 +49,20 @@ export class PlayersController {
     } else {
       throw new BadRequestException(`Category does not exist!`);
     }
+  }
+
+  @Post('/:_id/upload')
+  @UseInterceptors(FileInterceptor('file'))
+  async fileUpload(@UploadedFile() file, @Param('_id') id: string) {
+    this.logger.log(file);
+
+    // Check if player exists in DB
+
+    // Send archive to S3 and get access URL
+
+    // Update player entity URL
+
+    // Return updated player
   }
 
   @Get()
