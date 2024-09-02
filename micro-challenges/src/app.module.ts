@@ -1,10 +1,12 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-
+import { ProxyrmqModule } from './proxyrmq/proxyrmq.module';
+import { MatchService } from './match/match.service';
+import { MatchModule } from './match/match.module';
+import { ChallengeService } from './challenge/challenge.service';
+import { ChallengeModule } from './challenge/challenge.module';
 @Module({
-  imports: [],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [ProxyrmqModule, MatchModule, ChallengeModule],
+  controllers: [],
+  providers: [MatchService, ChallengeService],
 })
 export class AppModule {}
