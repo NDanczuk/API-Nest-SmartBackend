@@ -7,7 +7,7 @@ export const PlayerSchema = new Schema(
     name: String,
     ranking: String,
     rankingPosition: Number,
-    urlPlayerAvatar: String,
+    playerAvatarUrl: String,
   },
   { timestamps: true, collection: 'players' },
 );

@@ -6,5 +6,5 @@ export interface Player extends Document {
   name: string;
   ranking: string;
   rankingPosition: number;
-  urlPlayerAvatar: string;
+  playerAvatarUrl: string;
 }
