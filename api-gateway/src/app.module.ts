@@ -6,7 +6,7 @@ import { PlayersModule } from './players/players.module';
 import { AwsModule } from './aws/aws.module';
 
 @Module({
-  imports: [PlayersModule, CategoriesModule, ProxyRMQModule, AwsModule],
+  imports: [AwsModule, PlayersModule, CategoriesModule, ProxyRMQModule],
   controllers: [],
   providers: [ClientProxySmartRanking],
 })

@@ -20,12 +20,16 @@ import { lastValueFrom, Observable } from 'rxjs';
 import { UpdatePlayerDto } from './dtos/update-player.dto';
 import { ParamsValidationPipe } from 'src/common/pipes/params-validation.pipe';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { AwsService } from 'src/aws/aws.service';
 
 @Controller('api/v1/players')
 export class PlayersController {
   private logger = new Logger(PlayersController.name);
 
-  constructor(private clientProxySmartRanking: ClientProxySmartRanking) {}
+  constructor(
+    private clientProxySmartRanking: ClientProxySmartRanking,
+    private awsService: AwsService,
+  ) {}
 
   private clientAdminBackend =
     this.clientProxySmartRanking.getClientProxyAdminBackEndInstance();
@@ -53,16 +57,32 @@ export class PlayersController {
 
   @Post('/:_id/upload')
   @UseInterceptors(FileInterceptor('file'))
-  async fileUpload(@UploadedFile() file, @Param('_id') id: string) {
+  async fileUpload(@UploadedFile() file, @Param('_id') _id: string) {
     this.logger.log(file);
 
     // Check if player exists in DB
+    const player = await lastValueFrom(
+      this.clientAdminBackend.send('consult-players', _id),
+    );
+
+    if (!player) {
+      throw new BadRequestException(`Player not found!`);
+    }
 
     // Send archive to S3 and get access URL
+    const playerAvatarUrl = await this.awsService.fileUpload(file, _id);
 
     // Update player entity URL
+    const updatePlayerDto: UpdatePlayerDto = {};
+    updatePlayerDto.playerAvatarUrl = playerAvatarUrl.url;
+
+    await this.clientAdminBackend.emit('update-player', {
+      id: _id,
+      player: updatePlayerDto,
+    });
 
     // Return updated player
+    return this.clientAdminBackend.send('consult-players', _id);
   }
 
   @Get()
