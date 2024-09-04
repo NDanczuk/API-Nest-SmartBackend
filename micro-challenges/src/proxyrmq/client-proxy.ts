@@ -4,15 +4,28 @@ import {
   ClientProxyFactory,
   Transport,
 } from '@nestjs/microservices';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class ClientProxySmartRanking {
-  getClientProxyAdminBackEndInstance(): ClientProxy {
+  constructor(private configService: ConfigService) {}
+
+  getClientProxyAdminBackendInstance(): ClientProxy {
     return ClientProxyFactory.create({
       transport: Transport.RMQ,
       options: {
         urls: ['amqp://dev:devpass@localhost:5672/smartranking'],
         queue: 'admin-backend',
+      },
+    });
+  }
+
+  getClientProxyChallengesInstance(): ClientProxy {
+    return ClientProxyFactory.create({
+      transport: Transport.RMQ,
+      options: {
+        urls: ['amqp://dev:devpass@localhost:5672/smartranking'],
+        queue: 'challenges',
       },
     });
   }
